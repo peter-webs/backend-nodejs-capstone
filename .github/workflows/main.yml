@@ -1,0 +1,114 @@
+Hands-on Lab: CI/CD with GitHub Actions
+Estimated time needed: 30 minutes
+
+Your team is growing! Management has decided to hire front-end and back-end engineers to ensure features on the roadmap are developed in time for future releases. However, this means that multiple engineers will need to work in parallel on the repository. You must ensure the code pushed to the main branch meets the team coding style and is free of syntax errors.
+
+So far, you have:
+
+Created the back end
+Integrated the front end and back end and tested it
+Pushed all the code to your GitHub repository.
+Go to your GitHub repository to ensure all your code is present.
+
+The code in your repository should be error-free, follow the standardized coding norms, and adhere to best practices. You may have noticed some suggestions that display with colored squiggly lines while using the Cloud IDE. These are the IDE's built-in linters in action.
+
+Linting automates the code review process by providing feedback on code quality and adherence to coding standards before its merged into the codebase.
+
+Overall, you use linters as an essential tool as part of the development process. Linting helps improve code quality, maintain consistency, and prevent common coding errors and security vulnerabilities in software development projects.
+
+In this lab, you will add linting to your repository using a GitHub workflow containing GitHub Actions. Your linting will automatically check for errors whenever a developer creates a pull request or whenever you merge a branch into the default main branch.
+
+GitHub Workflow
+Examine the workflow template provided below.
+
+php
+
+name: 'CI/CD'
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  lint_js:
+      name: Lint JavaScript Files
+      runs-on: ubuntu-latest
+
+      steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+
+      - name: Install and Run Linter
+        run: |
+          # This command finds all JavaScript files recursively and runs JSHint on them
+          npm init -y
+          npm install eslint eslint-config-standard eslint@^8.0.1 eslint-plugin-import@^2.25.2 eslint-plugin-n@^16.0.0  eslint-plugin-promise@^6.0.0
+          find ./secondChance-backend -name app.js -exec ./node_modules/.bin/eslint -c .eslintrc.js {} +
+          # find ./secondChance-backend -name auth.js -exec ./node_modules/.bin/eslint -c .eslintrc.js {} +
+          # find ./secondChance-backend -name secondChanceItemsRoutes.js -exec ./node_modules/.bin/eslint -c .eslintrc.js {} +
+          # find ./secondChance-backend -name searchRoutes.js -exec ./node_modules/.bin/eslint -c .eslintrc.js {} +
+          # find ./secondChance-backend -name index.js -exec ./node_modules/.bin/eslint -c .eslintrc.js {} +
+          # find ./sentiment -name index.js -exec ./node_modules/.bin/eslint -c .eslintrc.js {} +
+          echo "Linted all the js files successfully"
+Line 1 contains the name of the workflow.
+The lines after on define when this workflow will run. The workflow should run when developers push a change to the main branch or create a pull_request. These two ways are captured as follows:
+run on push to the main branch (main or master):
+yaml
+
+push:
+  branches: [master, main]
+run when PR is created on main branches (main or master):
+yaml
+
+pull_request:
+  branches: [master, main]
+Next, this workflow defines 1 job:
+lint_js: Lint specified JavaScript files
+GitHub Jobs
+Let's look at each of these jobs:
+
+lint_js
+Set up the Node.js runtime for the action to run using the actions/setup-node@v4 action.
+Set up package.json for the root directory.
+Install eslint linter and the required plugins.
+Run the linting command on the .js files specified using the configuration in .eslintrc.js.
+Print a message indicating success.
+Enable GitHub Actions
+To enable GitHub actions, log into GitHub and open your forked repo. Next, go to the Actions tab and click Set up a workflow yourself.
+
+Paste the lint code given above inside main.yml and commit it.
+
+Open the Actions tab again, and you will see that the commit has automatically started the lint workflow.
+
+You can click the workflow run to see the individual jobs and the logs for each job. When the workflow successfully completes, you will see the green tick indicating it went well. A red cross means it found errors in the code while linting.
+
+
+ESlinting has been configured in .eslintrc.js to check syntax, find problems and enforce coding style for Javascript files. Some of the generic required rules for standard code style include:
+Semicolon not required for ending the statement
+A space after a comma
+No two blank lines
+Only two spaces in the start of a sentence
+Strings within single quotes
+The equality check operator should be === and not ==
+More details can be found here.
+
+Uncomment the following lines in main.yml which lints the other JavaScript files. Commit and push the code to lint them for standardized style and error-free code.
+plaintext
+
+          # find ./secondChance-backend -name auth.js -exec ./node_modules/.bin/eslint -c .eslintrc.js {} +
+          # find ./secondChance-backend -name secondChanceItemsRoutes.js -exec ./node_modules/.bin/eslint -c .eslintrc.js {} +
+          # find ./secondChance-backend -name searchRoutes.js -exec ./node_modules/.bin/eslint -c .eslintrc.js {} +
+          # find ./secondChance-backend -name index.js -exec ./node_modules/.bin/eslint -c .eslintrc.js {} +
+          # find ./sentiment -name index.js -exec ./node_modules/.bin/eslint -c .eslintrc.js {} +
+Assessment
+For Option 1 - AI Graded Submission and Evaluation: Copy and paste the the terminal output of action workflow in the file named CICD and save it for the Submission later.
+
+For Option 2: Peer-Graded Submission and Evaluation: Take a screenshot of the successful action workflow on GitHub and save it as CICD.png for the Peer Assignment.
+
+Summary
+In this lab, you added a linting service to your application. As a result, all new code will automatically get checked for syntax errors. This will ensure all developers follow the team coding guidelines.
